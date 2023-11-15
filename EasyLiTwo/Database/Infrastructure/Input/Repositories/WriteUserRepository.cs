@@ -12,14 +12,14 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Repositories
     {
         private readonly IDbConnection _connection;
 
-        public WriteUserRepository(SqlFactory factory)
+        public WriteUserRepository(ISqlFactory factory)
         {
-            _connection = factory.SQLiteConnectionsFactory();
+            _connection = factory.GetConnection();
         }
 
         public void InsertUser(UserEntity user)
         {
-            var query = new NewUserQuery().InsertUserQuery(user);
+            var query = new InputUserQueries().InsertUserQuery(user);
 
             try
             {

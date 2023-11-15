@@ -4,9 +4,9 @@ using System.Data.SQLite;
 
 namespace EasyLiTwo.Database.Infrastructure.Factory
 {
-    public class SqlFactory
+    public class Sqlite : ISqlFactory
     {
-        public IDbConnection SQLiteConnectionsFactory()
+        public IDbConnection GetConnection()
         {
             return new SQLiteConnection($"Data Source={System.Windows.Forms.Application.StartupPath}\\{Map.GetMainDatabaseName()}");
         }

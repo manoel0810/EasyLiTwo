@@ -3,7 +3,7 @@ using EasyLiTwo.Database.Infrastructure.Shared;
 
 namespace EasyLiTwo.Database.Infrastructure.Input.Queries
 {
-    public class NewUserQuery : BaseQuery
+    public class InputUserQueries : BaseQuery
     {
         public QueryModel InsertUserQuery(UserEntity user)
         {
@@ -14,21 +14,21 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Queries
             (
                 @USERNAME,
                 @SHA,
-                @NAME,
-                @EMAIL,
-                @USER_TYPE,
-                @USER_STATE
+                @Name,
+                @Email,
+                @UserType,
+                @UserState
             )
             ";
 
             Parameters = new
             {
                 USERNAME = user.Username,
-                SHA = user.SHA,
-                NAME = user.Name,
-                EMAIL = user.Email,
-                USER_TYPE = (int)user.UserType,
-                USER_STATE = (int)user.UserState,
+                user.SHA,
+                user.Name,
+                user.Email,
+                UserType = (int)user.UserType,
+                UserState = (int)user.UserState,
             };
 
             return new QueryModel(Query, Parameters);

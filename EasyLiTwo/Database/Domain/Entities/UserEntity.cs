@@ -2,6 +2,7 @@
 using EasyLiTwo.Database.Domain.Notifications;
 using EasyLiTwo.Database.Domain.Validations;
 using EasyLiTwo.Database.Domain.Validations.Interfaces;
+using EasyLiTwo.Database.Output.DTOs;
 using System.Collections.Generic;
 
 namespace EasyLiTwo.Database.Domain.Entities
@@ -20,6 +21,20 @@ namespace EasyLiTwo.Database.Domain.Entities
             Email = email;
             UserType = usertype;
             UserState = userState;
+
+            _notifications = new List<Notification>();
+            IsValid();
+        }
+
+        public UserEntity(UserDTO userDTO)
+        {
+            Username = userDTO.Username;
+            SHA = userDTO.SHA;
+            Name = userDTO.Name;
+            Email = userDTO.Email;
+
+            UserType = (UserType)userDTO.UserType;
+            UserState = (UserState)userDTO.UserState;
 
             _notifications = new List<Notification>();
             IsValid();
@@ -45,5 +60,7 @@ namespace EasyLiTwo.Database.Domain.Entities
         {
             return new LoginCreateValidation(this).CheckFields().IsValid();
         }
+
+        public bool IsFree() => UserState == UserState.Free;
     }
 }

@@ -92,13 +92,18 @@
     <Compile Include="Database\Domain\Notifications\Notification.cs" />
     <Compile Include="Database\Domain\Validations\Interfaces\IValidate.cs" />
     <Compile Include="Database\Domain\Validations\LoginCreateValidation.cs" />
-    <Compile Include="Database\Infrastructure\Factory\SqlFactory.cs" />
-    <Compile Include="Database\Infrastructure\Input\Queries\NewUserQuery.cs" />
+    <Compile Include="Database\Infrastructure\Factory\ISqlFactory.cs" />
+    <Compile Include="Database\Infrastructure\Factory\Sqlite.cs" />
+    <Compile Include="Database\Infrastructure\Input\Queries\InputUserQueries.cs" />
     <Compile Include="Database\Infrastructure\Input\Repositories\WriteUserRepository.cs" />
+    <Compile Include="Database\Infrastructure\Output\Queries\OutputUserQueries.cs" />
+    <Compile Include="Database\Infrastructure\Output\Repositories\UserReadRepository.cs" />
     <Compile Include="Database\Infrastructure\Shared\BaseQuery.cs" />
     <Compile Include="Database\Infrastructure\Shared\Map.cs" />
     <Compile Include="Database\Infrastructure\Shared\QueryModel.cs" />
     <Compile Include="Database\Input\Repositories\IWriteUserRepository.cs" />
+    <Compile Include="Database\Output\DTOs\UserDTO.cs" />
+    <Compile Include="Database\Output\Repositories\IReadUserRepository.cs" />
     <Compile Include="Interfaces\IAuditable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -135,9 +140,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Database\Infrastructure\Output\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Normal Select.cur" />
   </ItemGroup>
