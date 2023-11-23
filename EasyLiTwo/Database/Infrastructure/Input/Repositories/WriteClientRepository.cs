@@ -8,18 +8,18 @@ using System.Data;
 
 namespace EasyLiTwo.Database.Infrastructure.Input.Repositories
 {
-    public class WriteUserRepository : IWriteUserRepository
+    internal class WriteClientRepository : IWriteClientRepository
     {
         private readonly IDbConnection _connection;
 
-        public WriteUserRepository(ISqlFactory factory)
+        public WriteClientRepository(ISqlFactory factory)
         {
             _connection = factory.GetConnection();
         }
 
-        public void InsertUser(UserEntity user)
+        public void InsertClient(ClientEntity entity)
         {
-            var query = new InputUserQueries().InsertUserQuery(user);
+            var query = new InputClientQueries().InsertClientQuery(entity);
 
             try
             {
@@ -30,7 +30,7 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Repositories
             }
             catch
             {
-                throw new Exception($"Erro ao registrar usuário");
+                throw new Exception($"Erro ao registrar cliente");
             }
         }
     }

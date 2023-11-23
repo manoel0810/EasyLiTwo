@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using EasyLiTwo.Database.Infrastructure.Factory;
+using EasyLiTwo.Database.Infrastructure.Factory.Interfaces;
 using EasyLiTwo.Database.Infrastructure.Output.Queries;
 using EasyLiTwo.Database.Output.DTOs;
 using EasyLiTwo.Database.Output.Repositories;
@@ -29,9 +29,9 @@ namespace EasyLiTwo.Database.Infrastructure.Output.Repositories
                     return results;
                 }
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Erro ao obter dados do usuário por Nickname" + e.Message);
+                throw new Exception("Erro ao obter dados do usuário por Nickname");
             }
         }
 
@@ -47,9 +47,9 @@ namespace EasyLiTwo.Database.Infrastructure.Output.Repositories
                     return results;
                 }
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception("Erro ao obter dados do usuário por HASH" + e.Message);
+                throw new Exception("Erro ao obter dados do usuário por HASH");
             }
         }
     }

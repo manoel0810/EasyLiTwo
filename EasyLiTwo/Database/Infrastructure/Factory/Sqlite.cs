@@ -1,4 +1,5 @@
-﻿using EasyLiTwo.Database.Infrastructure.Shared;
+﻿using EasyLiTwo.Database.Infrastructure.Factory.Interfaces;
+using EasyLiTwo.Database.Infrastructure.Shared;
 using System.Data;
 using System.Data.SQLite;
 

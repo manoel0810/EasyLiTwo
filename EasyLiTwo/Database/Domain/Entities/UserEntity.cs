@@ -23,7 +23,7 @@ namespace EasyLiTwo.Database.Domain.Entities
             UserState = userState;
 
             _notifications = new List<Notification>();
-            IsValid();
+            //IsValid();
         }
 
         public UserEntity(UserDTO userDTO)
@@ -37,7 +37,7 @@ namespace EasyLiTwo.Database.Domain.Entities
             UserState = (UserState)userDTO.UserState;
 
             _notifications = new List<Notification>();
-            IsValid();
+            //IsValid();
         }
 
         #region  External Props
