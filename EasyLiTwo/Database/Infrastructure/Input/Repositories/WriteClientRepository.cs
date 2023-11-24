@@ -17,6 +17,23 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Repositories
             _connection = factory.GetConnection();
         }
 
+        public void DeleteClient(string guid)
+        {
+            var query = new InputClientQueries().DeleteClientQuery(guid);
+
+            try
+            {
+                using (_connection)
+                {
+                    _connection.Execute(query.Query, query.Parameters);
+                }
+            }
+            catch
+            {
+                throw new Exception($"Erro ao apagar cliente");
+            }
+        }
+
         public void InsertClient(ClientEntity entity)
         {
             var query = new InputClientQueries().InsertClientQuery(entity);

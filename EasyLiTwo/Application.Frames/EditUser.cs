@@ -1,4 +1,5 @@
-﻿using EasyLiTwo.Database.Domain.Entities;
+﻿using EasyLiTwo.Application.Modal;
+using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Domain.Enums;
 using EasyLiTwo.Database.Infrastructure.Factory;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
@@ -11,13 +12,18 @@ namespace EasyLiTwo.Application.Frames
 {
     public partial class EditUser : Form
     {
+        private readonly ClientEntity _entity;
         private readonly Operat _operat;
         private Guid _id;
+        private bool _isModifyOrNew = false;
 
-        public EditUser(Operat operat)
+        public bool HasChanged => _isModifyOrNew;
+
+        public EditUser(Operat operat, ClientEntity entity = null)
         {
             InitializeComponent();
             _operat = operat;
+            _entity = entity;
         }
 
         private void BtnCerrar_Click(object sender, EventArgs e)
@@ -40,16 +46,28 @@ namespace EasyLiTwo.Application.Frames
                 if (password.GetResult == DialogResult.OK)
                 {
                     string sha = ComputeHash(password.GetPassword);
-                    ClientEntity entity = new ClientEntity(_id, Username.Text, UserEmail.Text, UserBirthday.Value.Date, sha, DateTime.Now.Date, UserState.Free);
+                    ClientEntity entity = new ClientEntity(_id, Username.Text.Trim(), UserEmail.Text.Trim(), UserBirthday.Value.Date, sha, DateTime.Now.Date, UserState.Free);
 
                     if (entity.IsValid())
                     {
                         WriteClientRepository cliente = new WriteClientRepository(new Sqlite());
                         cliente.InsertClient(entity);
 
-                        MessageBox.Show("Cliente registrado com êxito", "Registro", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ConfirmCase confirn = new ConfirmCase("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", true, "Fechar");
+                        confirn.ShowDialog();
+                        confirn?.Dispose();
+
+                        _isModifyOrNew = true;
                         password?.Dispose();
                         Close();
+                    }
+                    else
+                    {
+                        ConfirmCase confirmCase = new ConfirmCase("Registro de cliente", "Não foi possível registrar o cliente.\nVerifique os dados de entrada.", true);
+                        confirmCase.ShowDialog();
+                        confirmCase?.Dispose();
+
+                        return;
                     }
                 }
                 else
@@ -85,6 +103,14 @@ namespace EasyLiTwo.Application.Frames
             {
                 _id = Guid.NewGuid();
                 GuidCode.Text = _id.ToString();
+            }
+            else if (_operat == Operat.Update)
+            {
+                _id = _entity.Code;
+                GuidCode.Text = _id.ToString();
+                Username.Text = _entity.Username;
+                UserEmail.Text = _entity.Email;
+                UserBirthday.Value = _entity.Birth;
             }
         }
 

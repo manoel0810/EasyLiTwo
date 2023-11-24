@@ -104,6 +104,12 @@
     <Compile Include="Application.Frames\UserCenter.Designer.cs">
       <DependentUpon>UserCenter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Application.Modal\ConfirmCase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Application.Modal\ConfirmCase.Designer.cs">
+      <DependentUpon>ConfirmCase.cs</DependentUpon>
+    </Compile>
     <Compile Include="AuxiliaryClasses\LoginAuxiliary.cs" />
     <Compile Include="Database\Domain\Entities\ClientEntity.cs" />
     <Compile Include="Database\Domain\Entities\UserEntity.cs" />
@@ -152,6 +158,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Application.Frames\UserCenter.resx">
       <DependentUpon>UserCenter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Application.Modal\ConfirmCase.resx">
+      <DependentUpon>ConfirmCase.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

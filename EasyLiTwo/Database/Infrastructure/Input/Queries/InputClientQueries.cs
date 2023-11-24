@@ -35,5 +35,22 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Queries
 
             return new QueryModel(Query, Parameters);
         }
+
+        public QueryModel DeleteClientQuery(string guid)
+        {
+            Table = Map.GetClientTable();
+            Query = $@"
+
+            DELETE FROM {Table}
+            WHERE Guid = @Guid
+            ";
+
+            Parameters = new
+            {
+                Guid = guid
+            };
+
+            return new QueryModel(Query, Parameters);
+        }
     }
 }

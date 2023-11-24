@@ -1,5 +1,8 @@
-﻿using EasyLiTwo.Database.Domain.Enums;
+﻿using EasyLiTwo.Application.Modal;
+using EasyLiTwo.Database.Domain.Entities;
+using EasyLiTwo.Database.Domain.Enums;
 using EasyLiTwo.Database.Infrastructure.Factory;
+using EasyLiTwo.Database.Infrastructure.Input.Repositories;
 using EasyLiTwo.Database.Infrastructure.Output.Repositories;
 using System;
 using System.Data;
@@ -10,6 +13,8 @@ namespace EasyLiTwo.Application.Frames
 {
     public partial class UserCenter : Form
     {
+        private DataTable _users = new DataTable();
+
         public UserCenter()
         {
             InitializeComponent();
@@ -19,35 +24,77 @@ namespace EasyLiTwo.Application.Frames
         {
             EditUser edit = new EditUser(operat: EditUser.Operat.Create);
             edit.ShowDialog();
+            bool modify = edit.HasChanged;
             edit?.Dispose();
 
-
-            ReloadGrid();
+            if (modify)
+                LoadGrid();
         }
 
         private void UserCenter_Load(object sender, EventArgs e)
         {
             LoadGrid();
-        }
-
-        private void ReloadGrid()
-        {
-
+            SetDim();
         }
 
         private void Edit_Click(object sender, EventArgs e)
         {
+            if (Users.SelectedRows.Count > 0)
+            {
+                if (Users.SelectedRows[0].Cells[0].Value is null)
+                    return;
 
+                string userID = Users.SelectedRows[0].Cells[0].Value.ToString();
+                ClientReadRepository read = new ClientReadRepository(new Sqlite());
+
+                var data = read.GetClientByGuid(userID);
+                EditUser edit = new EditUser(EditUser.Operat.Update, new ClientEntity(data));
+                edit.ShowDialog();
+                edit?.Dispose();
+            }
         }
 
         private void Remove_Click(object sender, EventArgs e)
         {
+            if (Users.SelectedRows.Count > 0)
+            {
+                var value = Users.SelectedRows[0].Cells[0].Value;
+                if (value is null)
+                    return;
 
+                DialogResult expected = DialogResult.Yes;
+                ConfirmCase confir = new ConfirmCase("Apagar cliente", "Deseja realmente apagar esse cliente?\nEssa ação não é reversível", "Apagar", expected);
+                confir.ShowDialog();
+
+                if (confir.Result == expected)
+                {
+                    WriteClientRepository write = new WriteClientRepository(new Sqlite());
+                    write.DeleteClient((string)value);
+
+                    RemoveRowFromBase((string)value);
+                    Users.Rows.Remove(Users.CurrentRow);
+                }
+            }
+        }
+
+        private void RemoveRowFromBase(string guid)
+        {
+            int index = -1;
+            for (int i = 0; i < _users.Rows.Count; i++)
+            {
+                if (_users.Rows[i].Field<string>("ID") == guid)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index != -1)
+                _users.Rows.RemoveAt(index);
         }
 
         private void LoadGrid()
         {
-
             ClientReadRepository read = new ClientReadRepository(new Sqlite());
             var list = read.GetAll();
 
@@ -72,8 +119,8 @@ namespace EasyLiTwo.Application.Frames
                     row = Schema.NewRow();
                 }
 
-                Users.DataSource = Schema;
-                Users.Columns[0].Visible = false;
+                _users = Schema;
+                SetGridSource(_users);
             }
         }
 
@@ -96,6 +143,84 @@ namespace EasyLiTwo.Application.Frames
                     e.CellStyle.ForeColor = Color.Black;
                     e.CellStyle.BackColor = Color.FromArgb(205, 240, 190);
                 }
+            }
+        }
+
+        private void SetGridSource(DataTable source, bool HideID = true)
+        {
+            Users.DataSource = source;
+            Users.Columns[0].Visible = !HideID;
+        }
+
+        private void Filter_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(Filter.Text) && Filter.Text.Length >= 3)
+            {
+                DataTable filteredDataTable = _users.Clone();
+                foreach (DataRow row in _users.Rows)
+                {
+                    if (row["Nome"].ToString().ToUpper().Contains(Filter.Text.ToUpper()))
+                    {
+                        filteredDataTable.ImportRow(row);
+                    }
+                }
+
+                SetGridSource(filteredDataTable);
+            }
+            else if (string.IsNullOrWhiteSpace(Filter.Text))
+            {
+                SetGridSource(_users);
+            }
+        }
+
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void SetDim()
+        {
+            double totalAvaible = Users.Width * 0.7d;
+            double rest = Users.Width * 0.2d;
+
+            Users.Columns[1].Width = Convert.ToInt32(totalAvaible / 2);
+            Users.Columns[2].Width = Convert.ToInt32(totalAvaible / 2);
+            Users.Columns[3].Width = Convert.ToInt32(rest);
+        }
+
+        private void UserCenter_ResizeEnd(object sender, EventArgs e)
+        {
+            SetDim();
+        }
+
+        private void UserCenter_Resize(object sender, EventArgs e)
+        {
+            SetDim();
+        }
+
+        private void Users_DoubleClick(object sender, EventArgs e)
+        {
+            if (Users.SelectedRows.Count > 0)
+            {
+                Edit.PerformClick();
+            }
+        }
+
+        private void Users_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (Users.SelectedRows.Count > 0)
+                { Edit.PerformClick(); }
+            }
+        }
+
+        private void Filter_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (Users.SelectedRows.Count > 0)
+                { Edit.PerformClick(); }
             }
         }
     }

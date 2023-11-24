@@ -5,5 +5,6 @@ namespace EasyLiTwo.Database.Input.Repositories
     public interface IWriteClientRepository
     {
         void InsertClient(ClientEntity entity);
+        void DeleteClient(string guid);
     }
 }

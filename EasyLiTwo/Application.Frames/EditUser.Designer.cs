@@ -40,9 +40,9 @@
             this.Username = new System.Windows.Forms.TextBox();
             this.BarraTitulo = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
+            this.CloseButton = new System.Windows.Forms.Button();
             this.UserBirthday = new System.Windows.Forms.DateTimePicker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.CloseButton = new System.Windows.Forms.Button();
             this.BarraTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -64,7 +64,7 @@
             this.GuidCode.Location = new System.Drawing.Point(117, 84);
             this.GuidCode.Name = "GuidCode";
             this.GuidCode.ReadOnly = true;
-            this.GuidCode.Size = new System.Drawing.Size(244, 23);
+            this.GuidCode.Size = new System.Drawing.Size(267, 23);
             this.GuidCode.TabIndex = 0;
             this.GuidCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -136,7 +136,7 @@
             this.UserEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.UserEmail.Location = new System.Drawing.Point(117, 140);
             this.UserEmail.Name = "UserEmail";
-            this.UserEmail.Size = new System.Drawing.Size(244, 23);
+            this.UserEmail.Size = new System.Drawing.Size(267, 23);
             this.UserEmail.TabIndex = 2;
             // 
             // Username
@@ -144,7 +144,7 @@
             this.Username.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Username.Location = new System.Drawing.Point(117, 111);
             this.Username.Name = "Username";
-            this.Username.Size = new System.Drawing.Size(244, 23);
+            this.Username.Size = new System.Drawing.Size(267, 23);
             this.Username.TabIndex = 1;
             // 
             // BarraTitulo
@@ -169,23 +169,6 @@
             this.label6.TabIndex = 15;
             this.label6.Text = "Form Cliente";
             // 
-            // UserBirthday
-            // 
-            this.UserBirthday.Location = new System.Drawing.Point(117, 172);
-            this.UserBirthday.Name = "UserBirthday";
-            this.UserBirthday.Size = new System.Drawing.Size(244, 20);
-            this.UserBirthday.TabIndex = 3;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::EasyLiTwo.Properties.Resources.icon_cliente;
-            this.pictureBox1.Location = new System.Drawing.Point(401, 68);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(138, 153);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 29;
-            this.pictureBox1.TabStop = false;
-            // 
             // CloseButton
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -200,6 +183,23 @@
             this.CloseButton.TabIndex = 4;
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.BtnCerrar_Click);
+            // 
+            // UserBirthday
+            // 
+            this.UserBirthday.Location = new System.Drawing.Point(117, 172);
+            this.UserBirthday.Name = "UserBirthday";
+            this.UserBirthday.Size = new System.Drawing.Size(267, 20);
+            this.UserBirthday.TabIndex = 3;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::EasyLiTwo.Properties.Resources.icon_cliente;
+            this.pictureBox1.Location = new System.Drawing.Point(411, 69);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(138, 153);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 29;
+            this.pictureBox1.TabStop = false;
             // 
             // EditUser
             // 
