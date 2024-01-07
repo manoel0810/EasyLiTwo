@@ -17,7 +17,7 @@ namespace EasyLiTwo.Application.Frames
 
         }
 
-        private void usuáriosToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void UsuáriosToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             UserCenter usenter = new UserCenter();
             usenter.ShowDialog();

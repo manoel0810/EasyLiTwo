@@ -29,12 +29,24 @@ namespace EasyLiTwo.Database.Domain.Entities
 
         public ClientEntity(ClientDTO clientDTO)
         {
+            if (Guid.TryParse(clientDTO.Guid, out Guid code))
+                Code = code;
+#if !DEBUG
+            else
+                throw new ArgumentException($"Guid invalid to create a ClientEntity. The value was => {clientDTO.Guid}", nameof(clientDTO.Guid));
+#else
+            else
+                Code = Guid.Empty;
+#endif
+
             Username = clientDTO.Name;
             Email = clientDTO.Email;
             Birth = clientDTO.Birth;
             SHA = clientDTO.SHA;
             Reg = clientDTO.RegDate;
             UserState = (UserState)clientDTO.Status;
+
+            _notifications = new List<Notification>();
         }
 
         #region  External Props
