@@ -5,6 +5,7 @@ using EasyLiTwo.Database.Infrastructure.Factory;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
 using EasyLiTwo.Database.Infrastructure.Output.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -39,42 +40,83 @@ namespace EasyLiTwo.Application.Frames
 
         private void Edit_Click(object sender, EventArgs e)
         {
-            if (Users.SelectedRows.Count > 0)
+            if (Users.SelectedRows.Count == 1)
             {
                 if (Users.SelectedRows[0].Cells[0].Value is null)
                     return;
 
                 string userID = Users.SelectedRows[0].Cells[0].Value.ToString();
-                ClientReadRepository read = new ClientReadRepository(new Sqlite());
+                ClientReadRepository _read = new ClientReadRepository(new Sqlite());
+                var data = _read.GetClientByGuid(userID);
 
-                var data = read.GetClientByGuid(userID);
                 EditUser edit = new EditUser(EditUser.Operat.Update, new ClientEntity(data));
                 edit.ShowDialog();
                 edit?.Dispose();
             }
         }
 
+        private DialogResult ShowDialogBox(string header, string message, string btnExtraText, DialogResult expectedResult)
+        {
+            ConfirmCase confir = new ConfirmCase(header, message, btnExtraText, expectedResult);
+            confir.ShowDialog();
+
+            DialogResult result = confir.Result;
+            confir?.Dispose();
+            return result;
+        }
+
+        private void DeleteUser(string uid, Action dataGridViewDeleteAction)
+        {
+            WriteClientRepository _write = new WriteClientRepository(new Sqlite());
+            _write.DeleteClient(uid);
+            RemoveRowFromBase(uid);
+
+            dataGridViewDeleteAction.Invoke();
+        }
+
         private void Remove_Click(object sender, EventArgs e)
         {
-            if (Users.SelectedRows.Count > 0)
+            if (Users.SelectedRows.Count == 1)
             {
                 var value = Users.SelectedRows[0].Cells[0].Value;
                 if (value is null)
                     return;
 
-                DialogResult expected = DialogResult.Yes;
-                ConfirmCase confir = new ConfirmCase("Apagar cliente", "Deseja realmente apagar esse cliente?\nEssa ação não é reversível", "Apagar", expected);
-                confir.ShowDialog();
+                if (ShowDialogBox("Apagar cliente", "Deseja realmente apagar esse cliente?\nEssa ação não é reversível", "Apagar", DialogResult.Yes) == DialogResult.Yes)
+                    DeleteUser((string)value, () => { Users.Rows.Remove(Users.CurrentRow); });
+            }
+            else if (Users.SelectedRows.Count > 1)
+            {
+                List<object[]> guids = new List<object[]>();
+                foreach (DataGridViewRow row in Users.SelectedRows)
+                    if (row.Cells[0].Value != null)
+                        guids.Add(new object[] { (string)row.Cells[0].Value, row });
 
-                if (confir.Result == expected)
+                if (guids.Count > 0)
                 {
-                    WriteClientRepository write = new WriteClientRepository(new Sqlite());
-                    write.DeleteClient((string)value);
-
-                    RemoveRowFromBase((string)value);
-                    Users.Rows.Remove(Users.CurrentRow);
+                    if (ShowDialogBox("Apagar clientes", $"Deseja realmente apagar um número de {guids.Count} usuários?\nAção não reversível", "Apagar", DialogResult.Yes) == DialogResult.Yes)
+                    {
+                        foreach (object[] guid in guids)
+                            DeleteUser((string)guid[0], () => { RemoveRowFromDataGridView((DataGridViewRow)guid[1]); });
+                    }
                 }
             }
+        }
+
+        private void RemoveRowFromDataGridView(DataGridViewRow row)
+        {
+            int index = -1;
+            foreach (DataGridViewRow r in Users.SelectedRows)
+            {
+                if (r.Cells[0].Value == row.Cells[0].Value)
+                {
+                    index = r.Index;
+                    break;
+                }
+            }
+
+            if (index != -1)
+                Users.Rows.RemoveAt(index);
         }
 
         private void RemoveRowFromBase(string guid)
@@ -95,9 +137,8 @@ namespace EasyLiTwo.Application.Frames
 
         private void LoadGrid()
         {
-            ClientReadRepository read = new ClientReadRepository(new Sqlite());
-            var list = read.GetAll();
-
+            ClientReadRepository _read = new ClientReadRepository(new Sqlite());
+            var list = _read.GetAll();
             if (list != null)
             {
                 DataTable Schema = new DataTable();
@@ -221,6 +262,18 @@ namespace EasyLiTwo.Application.Frames
             {
                 if (Users.SelectedRows.Count > 0)
                 { Edit.PerformClick(); }
+            }
+        }
+
+        private void Users_SelectionChanged(object sender, EventArgs e)
+        {
+            if (Users.SelectedRows.Count > 1)
+            {
+                Edit.Enabled = false;
+            }
+            else if (Users.SelectedRows.Count < 2)
+            {
+                Edit.Enabled = true;
             }
         }
     }

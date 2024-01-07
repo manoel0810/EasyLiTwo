@@ -223,6 +223,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "EditUser";
             this.Load += new System.EventHandler(this.EditUser_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EditUser_KeyDown);
             this.BarraTitulo.ResumeLayout(false);
             this.BarraTitulo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

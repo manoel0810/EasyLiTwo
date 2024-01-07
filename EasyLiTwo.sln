@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyLiTwo", "EasyLiTwo\EasyLiTwo.csproj", "{E101F16F-7AC4-40CF-8C25-499FEE32FD9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyLiTwo.Tests", "EasyLiTwo.Tests\EasyLiTwo.Tests.csproj", "{F264248D-7E72-4B89-8F19-B029C4A16601}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyLiTwoTests", "EasyLiTwoTests\EasyLiTwoTests.csproj", "{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{E101F16F-7AC4-40CF-8C25-499FEE32FD9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E101F16F-7AC4-40CF-8C25-499FEE32FD9A}.Release|x64.ActiveCfg = Release|Any CPU
 		{E101F16F-7AC4-40CF-8C25-499FEE32FD9A}.Release|x64.Build.0 = Release|Any CPU
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Debug|x64.ActiveCfg = Debug|x64
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Debug|x64.Build.0 = Debug|x64
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Release|x64.ActiveCfg = Release|x64
-		{F264248D-7E72-4B89-8F19-B029C4A16601}.Release|x64.Build.0 = Release|x64
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Debug|x64.Build.0 = Debug|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Release|x64.ActiveCfg = Release|Any CPU
+		{A1F15B34-6B2A-451E-BB7E-401F6ECE1B24}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

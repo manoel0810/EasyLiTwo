@@ -3,6 +3,7 @@ using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Domain.Enums;
 using EasyLiTwo.Database.Infrastructure.Factory;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
+using EasyLiTwo.Database.Output.DTOs;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,45 +39,88 @@ namespace EasyLiTwo.Application.Frames
 
         private void Save_Click(object sender, EventArgs e)
         {
-            if (_operat == Operat.Create)
+            PasswordConfirmation password = new PasswordConfirmation();
+            password.ShowDialog();
+
+            if (password.GetResult == DialogResult.OK)
             {
-                PasswordConfirmation password = new PasswordConfirmation();
-                password.ShowDialog();
-
-                if (password.GetResult == DialogResult.OK)
+                string sha = ComputeHash(password.GetPassword);
+                if (TryCreateClientEntity(out var entity, GenerateClienteDTO(sha)))
                 {
-                    string sha = ComputeHash(password.GetPassword);
-                    ClientEntity entity = new ClientEntity(_id, Username.Text.Trim(), UserEmail.Text.Trim(), UserBirthday.Value.Date, sha, DateTime.Now.Date, UserState.Free);
+                    WriteClientRepository cliente = new WriteClientRepository(new Sqlite());
+                    Action a = () => { };
 
-                    if (entity.IsValid())
+                    if (_operat == Operat.Create)
                     {
-                        WriteClientRepository cliente = new WriteClientRepository(new Sqlite());
-                        cliente.InsertClient(entity);
-
-                        ConfirmCase confirn = new ConfirmCase("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", true, "Fechar");
-                        confirn.ShowDialog();
-                        confirn?.Dispose();
-
-                        _isModifyOrNew = true;
-                        password?.Dispose();
-                        Close();
+                        a = () =>
+                        {
+                            cliente.InsertClient(entity);
+                            ShowMessage("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", true, "Fechar");
+                        };
                     }
-                    else
+                    else if (_operat == Operat.Update)
                     {
-                        ConfirmCase confirmCase = new ConfirmCase("Registro de cliente", "Não foi possível registrar o cliente.\nVerifique os dados de entrada.", true);
-                        confirmCase.ShowDialog();
-                        confirmCase?.Dispose();
-
-                        return;
+                        a = () =>
+                        {
+                            cliente.UpdateClient(entity);
+                            ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", true, "Fechar");
+                        };
                     }
+
+                    ExitMainContext(a);
                 }
                 else
                 {
-                    MessageBox.Show("É necessário uma senha para o usuário", "Confirmações", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    password?.Dispose();
+                    ShowMessage("Registro de cliente", "Não foi possível registrar as informações.\nVerifique os dados de entrada.");
                     return;
                 }
             }
+            else
+            {
+                ShowMessage("Senhas de segurança", "É necessário informar a senha do usuário");
+                password?.Dispose();
+                return;
+            }
+        }
+
+        private void ExitMainContext(Action exitMessage)
+        {
+            exitMessage.Invoke();
+            _isModifyOrNew = true;
+            Close();
+        }
+
+        private void ShowMessage(string header, string message, bool doAlert = true, string buttonText = null)
+        {
+            ConfirmCase confirmCase = new ConfirmCase(header, message, doAlert, buttonText);
+            confirmCase.ShowDialog();
+            confirmCase?.Dispose();
+        }
+
+        private ClientDTO GenerateClienteDTO(string sha)
+        {
+            return new ClientDTO()
+            {
+                Guid = _id.ToString(),
+                Name = Username.Text.Trim(),
+                Email = UserEmail.Text.Trim(),
+                Birth = UserBirthday.Value.Date,
+                SHA = sha,
+                RegDate = DateTime.Now,
+                Status = (int)UserState.Free
+            };
+        }
+
+        private bool TryCreateClientEntity(out ClientEntity entity, ClientDTO dto)
+        {
+            if (dto == null)
+            {
+                entity = null;
+                return false;
+            }
+
+            entity = new ClientEntity(dto);
+            return entity.IsValid();
         }
 
         private string ComputeHash(string input)
@@ -99,6 +143,8 @@ namespace EasyLiTwo.Application.Frames
 
         private void EditUser_Load(object sender, EventArgs e)
         {
+            KeyPreview = true;
+
             if (_operat == Operat.Create)
             {
                 _id = Guid.NewGuid();
@@ -119,6 +165,12 @@ namespace EasyLiTwo.Application.Frames
         {
             Create,
             Update
+        }
+
+        private void EditUser_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                Close();
         }
     }
 }

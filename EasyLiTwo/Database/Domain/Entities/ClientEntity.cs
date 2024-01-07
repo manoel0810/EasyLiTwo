@@ -45,6 +45,8 @@ namespace EasyLiTwo.Database.Domain.Entities
             SHA = clientDTO.SHA;
             Reg = clientDTO.RegDate;
             UserState = (UserState)clientDTO.Status;
+
+            _notifications = new List<Notification>();
         }
 
         #region  External Props

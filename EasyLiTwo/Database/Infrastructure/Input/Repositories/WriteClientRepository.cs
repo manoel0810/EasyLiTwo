@@ -2,6 +2,7 @@
 using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Infrastructure.Factory.Interfaces;
 using EasyLiTwo.Database.Infrastructure.Input.Queries;
+using EasyLiTwo.Database.Infrastructure.Shared;
 using EasyLiTwo.Database.Input.Repositories;
 using System;
 using System.Data;
@@ -17,10 +18,8 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Repositories
             _connection = factory.GetConnection();
         }
 
-        public void DeleteClient(string guid)
+        private void ExecuteCommands(QueryModel query, string errorMessage)
         {
-            var query = new InputClientQueries().DeleteClientQuery(guid);
-
             try
             {
                 using (_connection)
@@ -30,25 +29,26 @@ namespace EasyLiTwo.Database.Infrastructure.Input.Repositories
             }
             catch
             {
-                throw new Exception($"Erro ao apagar cliente");
+                throw new Exception(errorMessage);
             }
+        }
+
+        public void DeleteClient(string guid)
+        {
+            var query = new InputClientQueries().DeleteClientQuery(guid);
+            ExecuteCommands(query, $"Erro ao apagar cliente");
         }
 
         public void InsertClient(ClientEntity entity)
         {
             var query = new InputClientQueries().InsertClientQuery(entity);
+            ExecuteCommands(query, "Erro ao registrar cliente");
+        }
 
-            try
-            {
-                using (_connection)
-                {
-                    _connection.Execute(query.Query, query.Parameters);
-                }
-            }
-            catch
-            {
-                throw new Exception($"Erro ao registrar cliente");
-            }
+        public void UpdateClient(ClientEntity entity)
+        {
+            var query = new InputClientQueries().UpdateClientQuery(entity);
+            ExecuteCommands(query, "Erro ao atualizar dados do cliente");
         }
     }
 }
