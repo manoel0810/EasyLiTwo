@@ -55,7 +55,7 @@ namespace EasyLiTwo.Application.Frames
                         a = () =>
                         {
                             cliente.InsertClient(entity);
-                            ShowMessage("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", true, "Fechar");
+                            ShowMessage("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", false, "Fechar");
                         };
                     }
                     else if (_operat == Operat.Update)
@@ -63,7 +63,7 @@ namespace EasyLiTwo.Application.Frames
                         a = () =>
                         {
                             cliente.UpdateClient(entity);
-                            ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", true, "Fechar");
+                            ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", false, "Fechar");
                         };
                     }
 
