@@ -21,15 +21,20 @@ namespace EasyLiTwo.Application.Frames
             InitializeComponent();
         }
 
-        private void NewUser_Click(object sender, EventArgs e)
+        private void CallUserEditForm(EditUser.Operat operation, ClientEntity entity = null)
         {
-            EditUser edit = new EditUser(operat: EditUser.Operat.Create);
+            EditUser edit = new EditUser(operat: operation, entity: entity);
             edit.ShowDialog();
             bool modify = edit.HasChanged;
             edit?.Dispose();
 
             if (modify)
                 LoadGrid();
+        }
+
+        private void NewUser_Click(object sender, EventArgs e)
+        {
+            CallUserEditForm(EditUser.Operat.Create);
         }
 
         private void UserCenter_Load(object sender, EventArgs e)
@@ -47,11 +52,7 @@ namespace EasyLiTwo.Application.Frames
 
                 string userID = Users.SelectedRows[0].Cells[0].Value.ToString();
                 ClientReadRepository _read = new ClientReadRepository(new Sqlite());
-                var data = _read.GetClientByGuid(userID);
-
-                EditUser edit = new EditUser(EditUser.Operat.Update, new ClientEntity(data));
-                edit.ShowDialog();
-                edit?.Dispose();
+                CallUserEditForm(EditUser.Operat.Update, new ClientEntity(_read.GetClientByGuid(userID)));
             }
         }
 
@@ -221,6 +222,9 @@ namespace EasyLiTwo.Application.Frames
 
         private void SetDim()
         {
+            if (Users.Columns.Count < 4)
+                return;
+
             double totalAvaible = Users.Width * 0.7d;
             double rest = Users.Width * 0.2d;
 
@@ -239,20 +243,22 @@ namespace EasyLiTwo.Application.Frames
             SetDim();
         }
 
+        private void ClickEditButton()
+        {
+            if (Users.SelectedRows.Count == 1)
+            { Edit.PerformClick(); }
+        }
+
         private void Users_DoubleClick(object sender, EventArgs e)
         {
-            if (Users.SelectedRows.Count > 0)
-            {
-                Edit.PerformClick();
-            }
+            ClickEditButton();
         }
 
         private void Users_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                if (Users.SelectedRows.Count > 0)
-                { Edit.PerformClick(); }
+                ClickEditButton();
             }
         }
 
@@ -260,8 +266,7 @@ namespace EasyLiTwo.Application.Frames
         {
             if (e.KeyCode == Keys.Enter)
             {
-                if (Users.SelectedRows.Count > 0)
-                { Edit.PerformClick(); }
+                ClickEditButton();
             }
         }
 
