@@ -3,6 +3,7 @@ using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Domain.Enums;
 using EasyLiTwo.Database.Infrastructure.Factory;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
+using EasyLiTwo.Database.Infrastructure.Output.Repositories;
 using EasyLiTwo.Database.Output.DTOs;
 using System;
 using System.Security.Cryptography;
@@ -39,7 +40,7 @@ namespace EasyLiTwo.Application.Frames
 
         private void Save_Click(object sender, EventArgs e)
         {
-            PasswordConfirmation password = new PasswordConfirmation();
+            PasswordConfirmation password = new PasswordConfirmation(_operat == Operat.Create ? PasswordConfirmation.PassworkConfirmationMode.NewPassword : PasswordConfirmation.PassworkConfirmationMode.ConfirmPassword);
             password.ShowDialog();
 
             if (password.GetResult == DialogResult.OK)
@@ -60,11 +61,21 @@ namespace EasyLiTwo.Application.Frames
                     }
                     else if (_operat == Operat.Update)
                     {
-                        a = () =>
+                        if (CheckUserPassWord(sha, GuidCode.Text))
                         {
-                            cliente.UpdateClient(entity);
-                            ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", false, "Fechar");
-                        };
+                            a = () =>
+                            {
+                                cliente.UpdateClient(entity);
+                                ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", false, "Fechar");
+                            };
+                        }
+                        else
+                        {
+                            a = () =>
+                            {
+                                ShowMessage("Correção de dados", "Senha do usuário inválida", true);
+                            };
+                        }
                     }
 
                     ExitMainContext(a);
@@ -81,6 +92,17 @@ namespace EasyLiTwo.Application.Frames
                 password?.Dispose();
                 return;
             }
+        }
+
+        private bool CheckUserPassWord(string hash, string uid)
+        {
+            ClientReadRepository read = new ClientReadRepository(new Sqlite());
+            var entity = read.GetClientByGuid(uid);
+            if (entity != null)
+                return entity.SHA == hash.ToUpper();
+
+
+            return false;
         }
 
         private void ExitMainContext(Action exitMessage)
