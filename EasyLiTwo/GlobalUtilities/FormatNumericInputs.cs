@@ -5,7 +5,7 @@ namespace EasyLiTwo.GlobalUtilities
 {
     public class FormatNumericInputs
     {
-        public void ValitedNumInput(ref KeyPressEventArgs e, bool IncludeCharp = false)
+        public static void ValitedNumInput(ref KeyPressEventArgs e, bool IncludeCharp = false)
         {
             char[] Commands = { Convert.ToChar(0x1), Convert.ToChar(0x3), Convert.ToChar(0x8),
                                 Convert.ToChar(0x16), Convert.ToChar(0x18), Convert.ToChar(0x1A)};

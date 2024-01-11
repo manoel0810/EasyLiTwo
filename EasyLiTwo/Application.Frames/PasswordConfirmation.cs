@@ -87,12 +87,12 @@ namespace EasyLiTwo.Application.Frames
 
         private void Password1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            numericInputs.ValitedNumInput(ref e, false);
+            FormatNumericInputs.ValitedNumInput(ref e, false);
         }
 
         private void Password2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            numericInputs.ValitedNumInput(ref e, false);
+            FormatNumericInputs.ValitedNumInput(ref e, false);
         }
 
         [Flags]

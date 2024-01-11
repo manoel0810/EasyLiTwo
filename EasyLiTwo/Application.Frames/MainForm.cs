@@ -5,11 +5,9 @@ namespace EasyLiTwo.Application.Frames
 {
     public partial class MainForm : Form
     {
-        private readonly UserEntity _userEntity;
-        public MainForm(UserEntity currentUserEntity)
+        public MainForm()
         {
             InitializeComponent();
-            _userEntity = currentUserEntity;
         }
 
         private void MainForm_Load(object sender, System.EventArgs e)
