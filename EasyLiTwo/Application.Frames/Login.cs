@@ -2,6 +2,7 @@
 using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Infrastructure.Factory;
 using EasyLiTwo.Database.Infrastructure.Output.Repositories;
+using EasyLiTwo.Shared;
 using System;
 using System.Linq;
 using System.Threading;
@@ -31,7 +32,8 @@ namespace EasyLiTwo.Application.Frames
 
         private void StartMainForm()
         {
-            System.Windows.Forms.Application.Run(new MainForm(_userEntity));
+            CurrentUser.SetUser(_userEntity);
+            System.Windows.Forms.Application.Run(new MainForm());     
         }
 
         private void Logon_Click(object sender, EventArgs e)

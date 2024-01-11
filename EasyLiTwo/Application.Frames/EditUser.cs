@@ -3,8 +3,9 @@ using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Domain.Enums;
 using EasyLiTwo.Database.Infrastructure.Factory;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
-using EasyLiTwo.Database.Infrastructure.Output.Repositories;
 using EasyLiTwo.Database.Output.DTOs;
+using EasyLiTwo.GlobalUtilities;
+using EasyLiTwo.Shared;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,8 +17,10 @@ namespace EasyLiTwo.Application.Frames
     {
         private readonly ClientEntity _entity;
         private readonly Operat _operat;
+
         private Guid _id;
         private bool _isModifyOrNew = false;
+        private UserState _newState = UserState.Free;
 
         public bool HasChanged => _isModifyOrNew;
 
@@ -40,69 +43,67 @@ namespace EasyLiTwo.Application.Frames
 
         private void Save_Click(object sender, EventArgs e)
         {
-            PasswordConfirmation password = new PasswordConfirmation(_operat == Operat.Create ? PasswordConfirmation.PassworkConfirmationMode.NewPassword : PasswordConfirmation.PassworkConfirmationMode.ConfirmPassword);
-            password.ShowDialog();
-
-            if (password.GetResult == DialogResult.OK)
+            if (CurrentUser.GetUserPublicInformation().UserType == UserType.Administrator)
             {
-                string sha = ComputeHash(password.GetPassword);
-                if (TryCreateClientEntity(out var entity, GenerateClienteDTO(sha)))
-                {
-                    WriteClientRepository cliente = new WriteClientRepository(new Sqlite());
-                    Action a = () => { };
-
-                    if (_operat == Operat.Create)
-                    {
-                        a = () =>
-                        {
-                            cliente.InsertClient(entity);
-                            ShowMessage("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", false, "Fechar");
-                        };
-                    }
-                    else if (_operat == Operat.Update)
-                    {
-                        if (CheckUserPassWord(sha, GuidCode.Text))
-                        {
-                            a = () =>
-                            {
-                                cliente.UpdateClient(entity);
-                                ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", false, "Fechar");
-                            };
-                        }
-                        else
-                        {
-                            a = () =>
-                            {
-                                ShowMessage("Correção de dados", "Senha do usuário inválida", true);
-                            };
-                        }
-                    }
-
-                    ExitMainContext(a);
-                }
-                else
-                {
-                    ShowMessage("Registro de cliente", "Não foi possível registrar as informações.\nVerifique os dados de entrada.");
-                    return;
-                }
+                DoUpdates();
             }
             else
             {
-                ShowMessage("Senhas de segurança", "É necessário informar a senha do usuário");
-                password?.Dispose();
-                return;
+                PasswordConfirmation password = new PasswordConfirmation(_operat == Operat.Create ? PasswordConfirmation.PassworkConfirmationMode.NewPassword : PasswordConfirmation.PassworkConfirmationMode.ConfirmPassword);
+                password.ShowDialog();
+                if (password.GetResult == DialogResult.OK)
+                    DoUpdates(password.GetPassword);
             }
         }
 
-        private bool CheckUserPassWord(string hash, string uid)
+        private void DoUpdates(string password = null)
         {
-            ClientReadRepository read = new ClientReadRepository(new Sqlite());
-            var entity = read.GetClientByGuid(uid);
-            if (entity != null)
-                return entity.SHA == hash.ToUpper();
+            string sha = password == null ? _entity.SHA : ComputeHash(password);
+            if (TryCreateClientEntity(out var entity, GenerateClienteDTO(sha)))
+            {
+                WriteClientRepository cliente = new WriteClientRepository(new Sqlite());
+                Action a = () => { };
 
+                if (_operat == Operat.Create)
+                {
+                    a = () =>
+                    {
+                        cliente.InsertClient(entity);
+                        ShowMessage("Cadastro de clientes", "O novo cliente foi cadastrado com sucesso.", false, "Fechar");
+                    };
+                }
+                else if (_operat == Operat.Update)
+                {
+                    if (CheckUserPassWord(sha))
+                    {
+                        a = () =>
+                        {
+                            cliente.UpdateClient(entity);
+                            ShowMessage("Correção de dados", "As informações foram atualizadas com êxito", false, "Fechar");
+                        };
+                    }
+                    else
+                    {
+                        a = () =>
+                        {
+                            ShowMessage("Correção de dados", "Senha do usuário inválida", true);
+                        };
+                    }
+                }
 
-            return false;
+                ExitMainContext(a);
+            }
+            else
+            {
+                ShowMessage("Registro de cliente", "Não foi possível registrar as informações.\nVerifique os dados de entrada.");
+                return;
+            }
+
+        }
+
+        private bool CheckUserPassWord(string hash)
+        {
+            return _entity.SHA == hash.ToUpper();
         }
 
         private void ExitMainContext(Action exitMessage)
@@ -129,7 +130,7 @@ namespace EasyLiTwo.Application.Frames
                 Birth = UserBirthday.Value.Date,
                 SHA = sha,
                 RegDate = DateTime.Now,
-                Status = (int)UserState.Free
+                Status = _operat == Operat.Create ? (int)UserState.Free : (int)_newState
             };
         }
 
@@ -166,6 +167,14 @@ namespace EasyLiTwo.Application.Frames
         private void EditUser_Load(object sender, EventArgs e)
         {
             KeyPreview = true;
+            Username.KeyPress += (_, arg) =>
+            {
+                FormatNameField.FormatNameCamp(ref arg, (TextBox)_);
+            };
+
+            var user = CurrentUser.GetUserPublicInformation();
+            if (user.UserType == UserType.Administrator && _operat == Operat.Update)
+                LockAndUnlockUser.Visible = true;
 
             if (_operat == Operat.Create)
             {
@@ -179,7 +188,16 @@ namespace EasyLiTwo.Application.Frames
                 Username.Text = _entity.Username;
                 UserEmail.Text = _entity.Email;
                 UserBirthday.Value = _entity.Birth;
+
+                LockAndUnlockUser.Text = _entity.UserState == UserState.Free ? "Bloquear" : "Desbloquear";
+                _newState = _entity.UserState;
             }
+        }
+
+        private void EditUser_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                Close();
         }
 
         [Flags]
@@ -189,10 +207,22 @@ namespace EasyLiTwo.Application.Frames
             Update
         }
 
-        private void EditUser_KeyDown(object sender, KeyEventArgs e)
+        private void LockAndUnlockUser_CheckedChanged(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Escape)
-                Close();
+            if (LockAndUnlockUser.Checked)
+            {
+                if (LockAndUnlockUser.Text.StartsWith("B"))
+                    _newState = UserState.Blocked;
+                else if (LockAndUnlockUser.Text.StartsWith("D"))
+                    _newState = UserState.Free;
+            }
+            else
+                _newState = _entity.UserState;
+        }
+
+        private void UpdatePassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -43,6 +43,8 @@
             this.CloseButton = new System.Windows.Forms.Button();
             this.UserBirthday = new System.Windows.Forms.DateTimePicker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.LockAndUnlockUser = new System.Windows.Forms.CheckBox();
+            this.UpdatePassword = new System.Windows.Forms.LinkLabel();
             this.BarraTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -135,6 +137,7 @@
             // 
             this.UserEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.UserEmail.Location = new System.Drawing.Point(117, 140);
+            this.UserEmail.MaxLength = 120;
             this.UserEmail.Name = "UserEmail";
             this.UserEmail.Size = new System.Drawing.Size(267, 23);
             this.UserEmail.TabIndex = 2;
@@ -143,6 +146,7 @@
             // 
             this.Username.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Username.Location = new System.Drawing.Point(117, 111);
+            this.Username.MaxLength = 120;
             this.Username.Name = "Username";
             this.Username.Size = new System.Drawing.Size(267, 23);
             this.Username.TabIndex = 1;
@@ -201,11 +205,38 @@
             this.pictureBox1.TabIndex = 29;
             this.pictureBox1.TabStop = false;
             // 
+            // LockAndUnlockUser
+            // 
+            this.LockAndUnlockUser.AutoSize = true;
+            this.LockAndUnlockUser.Location = new System.Drawing.Point(28, 205);
+            this.LockAndUnlockUser.Name = "LockAndUnlockUser";
+            this.LockAndUnlockUser.Size = new System.Drawing.Size(68, 17);
+            this.LockAndUnlockUser.TabIndex = 30;
+            this.LockAndUnlockUser.Text = "Bloquear";
+            this.LockAndUnlockUser.UseVisualStyleBackColor = true;
+            this.LockAndUnlockUser.Visible = false;
+            this.LockAndUnlockUser.CheckedChanged += new System.EventHandler(this.LockAndUnlockUser_CheckedChanged);
+            // 
+            // UpdatePassword
+            // 
+            this.UpdatePassword.AutoSize = true;
+            this.UpdatePassword.LinkColor = System.Drawing.Color.Black;
+            this.UpdatePassword.Location = new System.Drawing.Point(305, 68);
+            this.UpdatePassword.Name = "UpdatePassword";
+            this.UpdatePassword.Size = new System.Drawing.Size(79, 13);
+            this.UpdatePassword.TabIndex = 31;
+            this.UpdatePassword.TabStop = true;
+            this.UpdatePassword.Text = "Atualizar senha";
+            this.UpdatePassword.Visible = false;
+            this.UpdatePassword.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.UpdatePassword_LinkClicked);
+            // 
             // EditUser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(577, 294);
+            this.Controls.Add(this.UpdatePassword);
+            this.Controls.Add(this.LockAndUnlockUser);
             this.Controls.Add(this.UserBirthday);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label5);
@@ -248,5 +279,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.DateTimePicker UserBirthday;
+        private System.Windows.Forms.CheckBox LockAndUnlockUser;
+        private System.Windows.Forms.LinkLabel UpdatePassword;
     }
 }
