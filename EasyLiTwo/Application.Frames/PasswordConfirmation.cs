@@ -10,7 +10,6 @@ namespace EasyLiTwo.Application.Frames
         private string _password;
         private string _newPassword;
         private readonly PassworkConfirmationMode _confirmationMode;
-        readonly FormatNumericInputs numericInputs = new FormatNumericInputs();
 
         public PasswordConfirmation(PassworkConfirmationMode confirmationMode)
         {
@@ -24,18 +23,20 @@ namespace EasyLiTwo.Application.Frames
 
         private void Save_Click(object sender, EventArgs e)
         {
-
             if (IsPasswordValid())
             {
                 if (_confirmationMode == PassworkConfirmationMode.NewPassword || _confirmationMode == PassworkConfirmationMode.UpdatePassword)
                 {
+
                     if (Password1.Text != Password2.Text)
                     {
                         MessageBox.Show("Suas senhas estão diferentes", "Confirmações", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
                     else
+                    {
                         UpdateAndClose();
+                    }
                 }
                 else if (_confirmationMode == PassworkConfirmationMode.ConfirmPassword)
                 {
@@ -52,8 +53,8 @@ namespace EasyLiTwo.Application.Frames
 
         private void UpdateAndClose()
         {
-            _password = Password1.Text;
-            _newPassword = Password3.Text;
+            _password = _confirmationMode != PassworkConfirmationMode.UpdatePassword ? Password1.Text : Password3.Text;
+            _newPassword = Password2.Text;
             _result = DialogResult.OK;
             Close();
         }
@@ -95,14 +96,6 @@ namespace EasyLiTwo.Application.Frames
             FormatNumericInputs.ValitedNumInput(ref e, false);
         }
 
-        [Flags]
-        public enum PassworkConfirmationMode
-        {
-            NewPassword,
-            UpdatePassword,
-            ConfirmPassword
-        }
-
         private void PasswordConfirmation_Load(object sender, EventArgs e)
         {
             KeyPreview = true;
@@ -126,6 +119,14 @@ namespace EasyLiTwo.Application.Frames
         {
             if (e.KeyCode == Keys.Enter)
                 Save.PerformClick();
+        }
+
+        [Flags]
+        public enum PassworkConfirmationMode
+        {
+            NewPassword,
+            UpdatePassword,
+            ConfirmPassword
         }
     }
 }

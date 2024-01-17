@@ -2,6 +2,7 @@
 using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Domain.Enums;
 using EasyLiTwo.Database.Infrastructure.Factory;
+using EasyLiTwo.Database.Infrastructure.Factory.Interfaces;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
 using EasyLiTwo.Database.Infrastructure.Output.Repositories;
 using System;
@@ -15,21 +16,24 @@ namespace EasyLiTwo.Application.Frames
     public partial class UserCenter : Form
     {
         private DataTable _users = new DataTable();
+        private readonly ISqlFactory _factory;
 
-        public UserCenter()
+        public UserCenter(ISqlFactory factory)
         {
             InitializeComponent();
+            _factory = factory;
         }
 
         private void CallUserEditForm(EditUser.Operat operation, ClientEntity entity = null)
         {
-            EditUser edit = new EditUser(operat: operation, entity: entity);
-            edit.ShowDialog();
-            bool modify = edit.HasChanged;
-            edit?.Dispose();
+            using (EditUser edit = new EditUser(operation, _factory, entity))
+            {
+                edit.ShowDialog();
+                bool modify = edit.HasChanged;
 
-            if (modify)
-                LoadGrid();
+                if (modify)
+                    LoadGrid();
+            }
         }
 
         private void NewUser_Click(object sender, EventArgs e)
