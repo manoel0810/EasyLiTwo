@@ -227,7 +227,6 @@
             this.UpdatePassword.TabIndex = 31;
             this.UpdatePassword.TabStop = true;
             this.UpdatePassword.Text = "Atualizar senha";
-            this.UpdatePassword.Visible = false;
             this.UpdatePassword.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.UpdatePassword_LinkClicked);
             // 
             // EditUser

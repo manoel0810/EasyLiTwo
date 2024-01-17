@@ -1,6 +1,7 @@
 ﻿using EasyLiTwo.AuxiliaryClasses;
 using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Infrastructure.Factory;
+using EasyLiTwo.Database.Infrastructure.Factory.Interfaces;
 using EasyLiTwo.Database.Infrastructure.Output.Repositories;
 using EasyLiTwo.Shared;
 using System;
@@ -14,10 +15,12 @@ namespace EasyLiTwo.Application.Frames
     {
         LoginAuxiliary LoginAuxiliary;
         private UserEntity _userEntity;
+        private readonly ISqlFactory _factory;
 
-        public Login()
+        public Login(ISqlFactory factory)
         {
             InitializeComponent();
+            _factory = factory;
         }
 
         private void GoMainForm()
@@ -33,7 +36,7 @@ namespace EasyLiTwo.Application.Frames
         private void StartMainForm()
         {
             CurrentUser.SetUser(_userEntity);
-            System.Windows.Forms.Application.Run(new MainForm());     
+            System.Windows.Forms.Application.Run(new MainForm(_factory));     
         }
 
         private void Logon_Click(object sender, EventArgs e)
@@ -49,7 +52,7 @@ namespace EasyLiTwo.Application.Frames
             if (LoginAuxiliary.IsValid())
             {
                 string AuthCode = LoginAuxiliary.GetHash;
-                UserReadRepository userReadRepository = new UserReadRepository(new Sqlite());
+                UserReadRepository userReadRepository = new UserReadRepository(_factory);
                 var ulist = userReadRepository.GetUserBySHA(AuthCode).ToList();
 
                 if (ulist.Count > 0)

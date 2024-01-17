@@ -1,7 +1,7 @@
 ﻿using EasyLiTwo.Application.Modal;
 using EasyLiTwo.Database.Domain.Entities;
 using EasyLiTwo.Database.Domain.Enums;
-using EasyLiTwo.Database.Infrastructure.Factory;
+using EasyLiTwo.Database.Infrastructure.Factory.Interfaces;
 using EasyLiTwo.Database.Infrastructure.Input.Repositories;
 using EasyLiTwo.Database.Output.DTOs;
 using EasyLiTwo.GlobalUtilities;
@@ -15,19 +15,21 @@ namespace EasyLiTwo.Application.Frames
 {
     public partial class EditUser : Form
     {
-        private readonly ClientEntity _entity;
+        private readonly ISqlFactory _factory;
         private readonly Operat _operat;
 
         private Guid _id;
+        private ClientEntity _entity;
         private bool _isModifyOrNew = false;
         private UserState _newState = UserState.Free;
 
         public bool HasChanged => _isModifyOrNew;
 
-        public EditUser(Operat operat, ClientEntity entity = null)
+        public EditUser(Operat operat, ISqlFactory factory, ClientEntity entity = null)
         {
             InitializeComponent();
             _operat = operat;
+            _factory = factory;
             _entity = entity;
         }
 
@@ -49,10 +51,12 @@ namespace EasyLiTwo.Application.Frames
             }
             else
             {
-                PasswordConfirmation password = new PasswordConfirmation(_operat == Operat.Create ? PasswordConfirmation.PassworkConfirmationMode.NewPassword : PasswordConfirmation.PassworkConfirmationMode.ConfirmPassword);
-                password.ShowDialog();
-                if (password.GetResult == DialogResult.OK)
-                    DoUpdates(password.GetPassword);
+                using (PasswordConfirmation password = new PasswordConfirmation(_operat == Operat.Create ? PasswordConfirmation.PassworkConfirmationMode.NewPassword : PasswordConfirmation.PassworkConfirmationMode.ConfirmPassword))
+                {
+                    password.ShowDialog();
+                    if (password.GetResult == DialogResult.OK)
+                        DoUpdates(password.GetPassword);
+                }
             }
         }
 
@@ -61,7 +65,7 @@ namespace EasyLiTwo.Application.Frames
             string sha = password == null ? _entity.SHA : ComputeHash(password);
             if (TryCreateClientEntity(out var entity, GenerateClienteDTO(sha)))
             {
-                WriteClientRepository cliente = new WriteClientRepository(new Sqlite());
+                WriteClientRepository cliente = new WriteClientRepository(_factory);
                 Action a = () => { };
 
                 if (_operat == Operat.Create)
@@ -115,9 +119,10 @@ namespace EasyLiTwo.Application.Frames
 
         private void ShowMessage(string header, string message, bool doAlert = true, string buttonText = null)
         {
-            ConfirmCase confirmCase = new ConfirmCase(header, message, doAlert, buttonText);
-            confirmCase.ShowDialog();
-            confirmCase?.Dispose();
+            using (ConfirmCase confirmCase = new ConfirmCase(header, message, doAlert, buttonText))
+            {
+                confirmCase.ShowDialog();
+            }
         }
 
         private ClientDTO GenerateClienteDTO(string sha)
@@ -200,13 +205,6 @@ namespace EasyLiTwo.Application.Frames
                 Close();
         }
 
-        [Flags]
-        public enum Operat
-        {
-            Create,
-            Update
-        }
-
         private void LockAndUnlockUser_CheckedChanged(object sender, EventArgs e)
         {
             if (LockAndUnlockUser.Checked)
@@ -222,7 +220,35 @@ namespace EasyLiTwo.Application.Frames
 
         private void UpdatePassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            throw new NotImplementedException();
+            using (PasswordConfirmation password = new PasswordConfirmation(CurrentUser.GetUserPublicInformation().UserType == UserType.Administrator ? PasswordConfirmation.PassworkConfirmationMode.NewPassword : PasswordConfirmation.PassworkConfirmationMode.UpdatePassword))
+            {
+                password.ShowDialog();
+                if (password.GetResult == DialogResult.OK)
+                {
+                    if (CurrentUser.GetUserPublicInformation().UserType != UserType.Administrator)
+                    {
+                        if (ComputeHash(password.GetPassword) != _entity.SHA)
+                        {
+                            ShowMessage("Correção de dados", "Senha do usuário inválida", true);
+                            return;
+                        }
+                    }
+
+                    ClientEntity updated = new ClientEntity(GenerateClienteDTO(ComputeHash(password.GetNewPassword)));
+                    WriteClientRepository write = new WriteClientRepository(_factory);
+                    write.UpdateClient(updated);
+                    _entity = updated;
+
+                    ShowMessage("Correção de dados", "Senha do usuário atualizada com êxito");
+                }
+            }
+        }
+
+        [Flags]
+        public enum Operat
+        {
+            Create,
+            Update
         }
     }
 }

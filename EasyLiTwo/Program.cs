@@ -1,4 +1,5 @@
 ﻿using EasyLiTwo.Application.Frames;
+using EasyLiTwo.Database.Infrastructure.Factory;
 using System;
 
 namespace EasyLiTwo
@@ -13,7 +14,7 @@ namespace EasyLiTwo
         {
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            System.Windows.Forms.Application.Run(new Login());
+            System.Windows.Forms.Application.Run(new Login(new Sqlite()));  //Define o banco de dados que será usado nesse ponto de entrada!
         }
     }
 }
